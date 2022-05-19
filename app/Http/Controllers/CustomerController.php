@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Customer;
+use Facades\App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CustomerController extends Controller
 {
@@ -36,6 +37,23 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         //
+        $rules=[
+            'name' => 'required',
+            'lastname' => 'required',
+            'email' => 'required',
+            'cellphone' => 'required',
+            'doc_num' => 'required'
+        ];
+
+        $validator = Validator::make($request->all(),$rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'status'=> false,
+                'message'=>$validator->messages(),
+                'data'=>[]
+            ]);
+        }
+        return Customer::createCustomer($request->all());
     }
 
     /**
